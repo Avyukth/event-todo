@@ -3,7 +3,7 @@ package application
 import (
 	"errors"
 
-	"event-todo/pkg/domain"
+	"event-todo/pkg/domains"
 )
 
 // CommandHandlers struct holds the dependencies required by command handlers

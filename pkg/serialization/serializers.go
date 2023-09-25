@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 
-	"event-todo/pkg/domain"
+	"event-todo/pkg/domains"
 )
 
 // EventSerializer is an interface defining the methods that an event serializer should have.

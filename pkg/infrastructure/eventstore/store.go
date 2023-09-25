@@ -4,7 +4,7 @@ import (
 	"errors"
 	"sync"
 
-	"event-todo/pkg/domain"
+	"event-todo/pkg/domains"
 )
 
 // EventStore is an interface defining the methods that an event store should have.

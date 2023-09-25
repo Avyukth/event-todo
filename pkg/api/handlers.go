@@ -2,7 +2,7 @@ package api
 
 import (
 	"event-todo/pkg/application"
-	"event-todo/pkg/domain"
+	"event-todo/pkg/domains"
 
 	"github.com/gofiber/fiber/v2"
 )

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"sync"
 
-	"event-todo/pkg/domain"
+	"event-todo/pkg/domains"
 )
 
 // ReadModelRepository is an interface defining the methods that a read model repository should have.
