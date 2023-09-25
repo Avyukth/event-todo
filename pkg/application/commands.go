@@ -2,8 +2,8 @@ package application
 
 import (
 	"errors"
-	"github.com/project_name/pkg/domain"
-	"github.com/project_name/pkg/domain/events"
+
+	"event-todo/pkg/domain"
 )
 
 // CommandHandlers struct holds the dependencies required by command handlers

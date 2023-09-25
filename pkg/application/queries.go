@@ -2,7 +2,8 @@ package application
 
 import (
 	"errors"
-	"github.com/project_name/pkg/domain"
+
+	"event-todo/pkg/domain"
 )
 
 // QueryHandlers struct holds the dependencies required by query handlers

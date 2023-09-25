@@ -1,9 +1,10 @@
 package api
 
 import (
+	"event-todo/pkg/application"
+	"event-todo/pkg/domain"
+
 	"github.com/gofiber/fiber/v2"
-	"github.com/project_name/pkg/application"
-	"github.com/project_name/pkg/domain"
 )
 
 // Handlers struct holds the command and query handlers

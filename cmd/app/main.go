@@ -3,12 +3,13 @@ package main
 import (
 	"log"
 
+	"event-todo/pkg/api"
+	"event-todo/pkg/application"
+	"event-todo/pkg/infrastructure/eventstore"
+	"event-todo/pkg/infrastructure/repository"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/project_name/pkg/api"
-	"github.com/project_name/pkg/application"
-	"github.com/project_name/pkg/infrastructure/eventstore"
-	"github.com/project_name/pkg/infrastructure/repository"
 )
 
 func main() {
