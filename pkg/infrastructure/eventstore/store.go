@@ -4,7 +4,7 @@ import (
 	"errors"
 	"sync"
 
-	"event-todo/pkg/domains"
+	domain "event-todo/pkg/domains"
 )
 
 // EventStore is an interface defining the methods that an event store should have.
@@ -20,7 +20,7 @@ type InMemoryEventStore struct {
 }
 
 // NewInMemoryEventStore initializes a new InMemoryEventStore.
-func NewInMemoryEventStore() *InMemoryEventStore {
+func NewEventStore() *InMemoryEventStore {
 	return &InMemoryEventStore{
 		storage: make(map[string][]domain.Event),
 	}
