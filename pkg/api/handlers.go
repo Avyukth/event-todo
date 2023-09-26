@@ -1,59 +1,77 @@
 package api
 
 import (
-	"event-todo/pkg/application"
-	"event-todo/pkg/domains"
+	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"event-todo/pkg/events"
+	"event-todo/pkg/todo"
 )
 
-// Handlers struct holds the command and query handlers
-type Handlers struct {
-	CommandHandlers *application.CommandHandlers
-	QueryHandlers   *application.QueryHandlers
+type Handler struct {
+	CommandHandler *todo.CommandHandler
+	EventHandler   *events.EventHandler
 }
 
-// NewHandlers initializes the API handlers with the given command and query handlers
-func NewHandlers(ch *application.CommandHandlers, qh *application.QueryHandlers) *Handlers {
-	return &Handlers{
-		CommandHandlers: ch,
-		QueryHandlers:   qh,
-	}
-}
-
-// CreateTodoHandler handles the creation of a new Todo item
-func (h *Handlers) CreateTodoHandler(c *fiber.Ctx) error {
-	// Extract data from request
-	var command domain.CreateTodoCommand
+func (h *Handler) CreateTask(c *fiber.Ctx) error {
+	// Parse request
+	var command todo.CreateTaskCommand
 	if err := c.BodyParser(&command); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Cannot parse JSON"})
 	}
 
-	// Handle the command
-	if err := h.CommandHandlers.HandleCreateTodoCommand(&command); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Internal Server Error"})
+	// Handle command
+	event, err := h.CommandHandler.HandleCreateTaskCommand(&command)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot create task"})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"status": "success", "message": "Todo successfully created"})
+	// Handle event
+	if err := h.EventHandler.HandleEvent(event); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot handle event"})
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "Task created"})
 }
 
-// GetTodoHandler handles the retrieval of a Todo item by ID
-func (h *Handlers) GetTodoHandler(c *fiber.Ctx) error {
+func (h *Handler) CompleteTask(c *fiber.Ctx) error {
 	id := c.Params("id")
-	todo, err := h.QueryHandlers.HandleGetTodoQuery(id)
-	if err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Todo not found"})
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "ID is required"})
 	}
 
-	return c.JSON(todo)
+	// Handle command
+	command := &todo.CompleteTaskCommand{ID: id}
+	event, err := h.CommandHandler.HandleCompleteTaskCommand(command)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot complete task"})
+	}
+
+	// Handle event
+	if err := h.EventHandler.HandleEvent(event); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot handle event"})
+	}
+
+	return c.JSON(fiber.Map{"message": fmt.Sprintf("Task %s completed", id)})
 }
 
-// ListTodosHandler handles the retrieval of all Todo items
-func (h *Handlers) ListTodosHandler(c *fiber.Ctx) error {
-	todos, err := h.QueryHandlers.HandleListTodosQuery()
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Internal Server Error"})
+func (h *Handler) DeleteTask(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "ID is required"})
 	}
 
-	return c.JSON(todos)
+	// Handle command
+	command := &todo.DeleteTaskCommand{ID: id}
+	event, err := h.CommandHandler.HandleDeleteTaskCommand(command)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot delete task"})
+	}
+
+	// Handle event
+	if err := h.EventHandler.HandleEvent(event); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot handle event"})
+	}
+
+	return c.JSON(fiber.Map{"message": fmt.Sprintf("Task %s deleted", id)})
 }
