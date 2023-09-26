@@ -2,7 +2,6 @@ package todo
 
 import (
 	"sync"
-
 	"event-todo/pkg/events"
 )
 
@@ -16,8 +15,8 @@ type TaskProjection struct {
 
 // ProjectionManager manages the read models/projections.
 type ProjectionManager struct {
-	mu     sync.RWMutex
-	tasks  map[string]*TaskProjection // In-memory read model
+	mu    sync.RWMutex
+	tasks map[string]*TaskProjection // In-memory read model
 }
 
 // NewProjectionManager initializes a new ProjectionManager.

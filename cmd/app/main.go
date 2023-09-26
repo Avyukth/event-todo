@@ -8,7 +8,7 @@ import (
 	"event-todo/pkg/api"
 	"event-todo/pkg/events"
 	"event-todo/pkg/todo"
-	"event-todo/internal/db"
+	"event-todo/internal"
 )
 
 func main() {
@@ -41,6 +41,11 @@ func main() {
 		DB:             inMemoryDB, // Assuming Handler has a DB field
 	}
 
+
+	&api.Handler{
+		ProjectionManager: projectionManager, // Injecting ProjectionManager
+		// Inject other dependencies if needed
+	}
 	// Setup routes
 	setupRoutes(app, apiHandler)
 

@@ -1,17 +1,17 @@
 package api
 
 import (
+	db "event-todo/internal"
+	"event-todo/pkg/todo"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
-	"event-todo/pkg/events"
-	"event-todo/pkg/todo"
 )
 
 type Handler struct {
-	CommandHandler *todo.CommandHandler
-	EventHandler   *events.EventHandler
-	DB             todo.DB
+	CommandHandler    *todo.CommandHandler
+	ProjectionManager *todo.ProjectionManager
+	DB                *db.InMemoryDB
 }
 
 func (h *Handler) CreateTask(c *fiber.Ctx) error {
@@ -28,7 +28,7 @@ func (h *Handler) CreateTask(c *fiber.Ctx) error {
 	}
 
 	// Handle event
-	if err := h.EventHandler.HandleEvent(event); err != nil {
+	if err := h.ProjectionManager.HandleEvent(event); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot handle event"})
 	}
 
@@ -49,7 +49,7 @@ func (h *Handler) CompleteTask(c *fiber.Ctx) error {
 	}
 
 	// Handle event
-	if err := h.EventHandler.HandleEvent(event); err != nil {
+	if err := h.ProjectionManager.HandleEvent(event); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot handle event"})
 	}
 
@@ -70,7 +70,7 @@ func (h *Handler) DeleteTask(c *fiber.Ctx) error {
 	}
 
 	// Handle event
-	if err := h.EventHandler.HandleEvent(event); err != nil {
+	if err := h.ProjectionManager.HandleEvent(event); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot handle event"})
 	}
 
