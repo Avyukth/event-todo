@@ -42,5 +42,3 @@ func (e *TodoCompleted) AggregateID() string {
 func (e *TodoCompleted) OccurredOn() time.Time {
 	return e.CompletedAt
 }
-
-// Other domain events can be defined here, for example, TodoDeleted, TodoUpdated, etc.

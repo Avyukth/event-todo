@@ -4,7 +4,7 @@ import (
 	"errors"
 	"sync"
 
-	"event-todo/pkg/domains"
+	domain "event-todo/pkg/domains"
 )
 
 // ReadModelRepository is an interface defining the methods that a read model repository should have.
@@ -21,7 +21,7 @@ type InMemoryReadModelRepository struct {
 }
 
 // NewInMemoryReadModelRepository initializes a new InMemoryReadModelRepository.
-func NewInMemoryReadModelRepository() *InMemoryReadModelRepository {
+func NewRepository() *InMemoryReadModelRepository {
 	return &InMemoryReadModelRepository{
 		storage: make(map[string]*domain.TodoReadModel),
 	}
