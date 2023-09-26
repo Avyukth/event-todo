@@ -8,6 +8,7 @@ import (
 	"event-todo/pkg/api"
 	"event-todo/pkg/events"
 	"event-todo/pkg/todo"
+	"event-todo/internal/db"
 )
 
 func main() {
@@ -18,10 +19,15 @@ func main() {
 	// Initialize in-memory event store
 	eventStore := events.NewInMemoryEventStore()
 
-	// Initialize event handler
-	eventHandler := &events.EventHandler{
-		// Inject dependencies if needed
-	}
+	// Initialize in-memory database
+	inMemoryDB := db.NewInMemoryDB()
+
+	// Initialize Projection Manager
+	projectionManager := todo.NewProjectionManager()
+
+	// Initialize event handler with Projection Manager
+	eventHandler := events.NewEventHandler()
+	eventHandler.ProjectionManager = projectionManager // Assuming EventHandler has a ProjectionManager field
 
 	// Initialize command handlers
 	commandHandler := &todo.CommandHandler{
@@ -32,6 +38,7 @@ func main() {
 	apiHandler := &api.Handler{
 		CommandHandler: commandHandler,
 		EventHandler:   eventHandler,
+		DB:             inMemoryDB, // Assuming Handler has a DB field
 	}
 
 	// Setup routes

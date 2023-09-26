@@ -11,6 +11,7 @@ import (
 type Handler struct {
 	CommandHandler *todo.CommandHandler
 	EventHandler   *events.EventHandler
+	DB             todo.DB
 }
 
 func (h *Handler) CreateTask(c *fiber.Ctx) error {
