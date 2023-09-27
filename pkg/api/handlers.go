@@ -23,7 +23,7 @@ func (h *Handler) CreateTask(c *fiber.Ctx) error {
 
 	aggregateID := uuid.NewString()
 
-	event, err := command.Execute(h.CommandHandler, aggregateID) // Replace with actual aggregate ID
+	event, err := command.Execute(h.CommandHandler, aggregateID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot execute command"})
 	}
@@ -49,7 +49,7 @@ func (h *Handler) CompleteTask(c *fiber.Ctx) error {
 
 
 	command := &todo.CompleteTaskCommand{ID: id}
-	event, err := command.Execute(h.CommandHandler, id) // Use Execute method here
+	event, err := command.Execute(h.CommandHandler, id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot complete task"})
 	}
@@ -75,13 +75,13 @@ func (h *Handler) DeleteTask(c *fiber.Ctx) error {
 
 
 	command := &todo.DeleteTaskCommand{ID: id}
-	event, err := command.Execute(h.CommandHandler, id) // Use Execute method here
+	event, err := command.Execute(h.CommandHandler, id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot delete task"})
 	}
 
 
-	if err := h.CommandHandler.EventStore.Save(id, event); err != nil { // Fixed here
+	if err := h.CommandHandler.EventStore.Save(id, event); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot save event"})
 	}
 
