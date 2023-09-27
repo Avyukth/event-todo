@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 
-	db "event-todo/internal"
 	"event-todo/pkg/api"
 	"event-todo/pkg/events"
 	"event-todo/pkg/repo"
@@ -19,7 +18,6 @@ func main() {
 
 	eventStore := repo.NewInMemoryEventStore()
 
-	inMemoryDB := db.NewInMemoryDB()
 
 	projectionManager := events.NewProjectionManager()
 
@@ -30,7 +28,6 @@ func main() {
 
 	apiHandler	:= &api.Handler{
 		CommandHandler: commandHandler,
-		DB:             inMemoryDB,
 		ProjectionManager: projectionManager,
 	}
 	setupRoutes(app, apiHandler)

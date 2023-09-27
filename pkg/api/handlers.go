@@ -1,7 +1,6 @@
 package api
 
 import (
-	db "event-todo/internal"
 	"event-todo/pkg/events"
 	"event-todo/pkg/todo"
 	"fmt"
@@ -13,7 +12,6 @@ import (
 type Handler struct {
 	CommandHandler    *todo.CommandHandler
 	ProjectionManager *events.ProjectionManager
-	DB                *db.InMemoryDB
 }
 
 func (h *Handler) CreateTask(c *fiber.Ctx) error {
