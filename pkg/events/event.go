@@ -2,12 +2,13 @@ package events
 
 import (
 	"errors"
-	
 )
 
 
 var (
 	ErrInvalidEventType = errors.New("invalid event type")
+
+	ErrEventNotFound = errors.New("event not found")
 )
 
 

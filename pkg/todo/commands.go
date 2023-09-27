@@ -3,6 +3,7 @@ package todo
 import (
 	"errors"
 	"event-todo/pkg/events"
+	"event-todo/pkg/repo"
 )
 
 
@@ -13,7 +14,7 @@ var (
 
 
 type CommandHandler struct {
-	EventStore        *events.EventStore
+	EventStore        *repo.EventStore
 	ProjectionManager *events.ProjectionManager
 }
 

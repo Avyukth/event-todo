@@ -1,29 +1,26 @@
-package events
+package repo
 
 import (
-	"errors"
+	ev "event-todo/pkg/events"
 	"sync"
 )
 
-var (
-	ErrEventNotFound = errors.New("event not found")
-)
 
 
 
 type EventStore struct {
 	mu      sync.RWMutex
-	storage map[string][]Event
+	storage map[string][]ev.Event
 }
 
 func NewInMemoryEventStore() *EventStore {
 	return &EventStore{
 		mu : sync.RWMutex{},
-		storage: make(map[string][]Event),
+		storage: make(map[string][]ev.Event),
 	}
 }
 
-func (es *EventStore) Save(aggregateID string, event Event) error {
+func (es *EventStore) Save(aggregateID string, event ev.Event) error {
 	es.mu.Lock()
 	defer es.mu.Unlock()
 
@@ -32,13 +29,13 @@ func (es *EventStore) Save(aggregateID string, event Event) error {
 	return nil
 }
 
-func (es *EventStore) Load(aggregateID string) ([]Event, error) {
+func (es *EventStore) Load(aggregateID string) ([]ev.Event, error) {
 	es.mu.RLock()
 	defer es.mu.RUnlock()
 
 	events, ok := es.storage[aggregateID]
 	if !ok {
-		return nil, ErrEventNotFound
+		return nil, ev.ErrEventNotFound
 	}
 
 	return events, nil

@@ -6,6 +6,7 @@ import (
 	db "event-todo/internal"
 	"event-todo/pkg/api"
 	"event-todo/pkg/events"
+	"event-todo/pkg/repo"
 	"event-todo/pkg/todo"
 
 	"github.com/gofiber/fiber/v2"
@@ -16,7 +17,7 @@ func main() {
 	app := fiber.New()
 	app.Use(logger.New())
 
-	eventStore := events.NewInMemoryEventStore()
+	eventStore := repo.NewInMemoryEventStore()
 
 	inMemoryDB := db.NewInMemoryDB()
 
