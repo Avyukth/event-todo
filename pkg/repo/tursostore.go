@@ -15,7 +15,7 @@ type EventStoreTurso struct {
 	db *sql.DB
 }
 
-func NewSQLiteEventStore(databaseURL string) (*EventStoreTurso, error) {
+func NewSQLiteEventStore(databaseURL string) (EventStorer, error) {
 	db, err := sql.Open("libsql", databaseURL)
 	if err != nil {
 		return nil, fmt.Errorf("could not open db: %v", err)

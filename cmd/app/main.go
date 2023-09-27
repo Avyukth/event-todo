@@ -16,8 +16,10 @@ func main() {
 	app := fiber.New()
 	app.Use(logger.New())
 
-	eventStore := repo.NewInMemoryEventStore()
-
+	eventStore, err := repo.NewSQLiteEventStore("file:turso.db")
+	if err != nil {
+		log.Fatalf("could not create event store: %v", err)
+	}
 
 	projectionManager := events.NewProjectionManager()
 

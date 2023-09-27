@@ -14,7 +14,7 @@ var (
 
 
 type CommandHandler struct {
-	EventStore        *repo.EventStore
+	EventStore        repo.EventStorer
 	ProjectionManager *events.ProjectionManager
 }
 
