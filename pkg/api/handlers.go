@@ -1,10 +1,9 @@
 package api
 
 import (
+	"fmt"
 	db "event-todo/internal"
 	"event-todo/pkg/todo"
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -21,13 +20,19 @@ func (h *Handler) CreateTask(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Cannot parse JSON"})
 	}
 
-	// Handle command
-	event, err := h.CommandHandler.HandleCreateTaskCommand(&command)
+	// Execute command to get the event
+	event, err := command.Execute(h.CommandHandler, "someAggregateID") // Replace with actual aggregate ID
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot create task"})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot execute command"})
 	}
 
-	// Handle event
+	aggregateID := "someAggregateID" // Replace with actual aggregate ID
+    // ...
+    if err := h.CommandHandler.EventStore.Save(aggregateID, event); err != nil {
+        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot save event"})
+    }
+
+	// Handle event to update the projection
 	if err := h.ProjectionManager.HandleEvent(event); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot handle event"})
 	}
@@ -43,12 +48,17 @@ func (h *Handler) CompleteTask(c *fiber.Ctx) error {
 
 	// Handle command
 	command := &todo.CompleteTaskCommand{ID: id}
-	event, err := h.CommandHandler.HandleCompleteTaskCommand(command)
+	event, err := command.Execute(h.CommandHandler, id) // Use Execute method here
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot complete task"})
 	}
 
-	// Handle event
+	// Save event to the event store
+	if err := h.CommandHandler.EventStore.Save(id, event); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot save event"})
+	}
+
+	// Handle event to update the projection
 	if err := h.ProjectionManager.HandleEvent(event); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot handle event"})
 	}
@@ -64,12 +74,17 @@ func (h *Handler) DeleteTask(c *fiber.Ctx) error {
 
 	// Handle command
 	command := &todo.DeleteTaskCommand{ID: id}
-	event, err := h.CommandHandler.HandleDeleteTaskCommand(command)
+	event, err := command.Execute(h.CommandHandler, id) // Use Execute method here
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot delete task"})
 	}
 
-	// Handle event
+	// Save event to the event store
+	if err := h.CommandHandler.EventStore.Save(id, event); err != nil { // Fixed here
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot save event"})
+	}
+
+	// Handle event to update the projection
 	if err := h.ProjectionManager.HandleEvent(event); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot handle event"})
 	}

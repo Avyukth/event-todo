@@ -2,6 +2,7 @@ package events
 
 import (
 	"errors"
+	"event-todo/pkg/todo"
 )
 
 // Define errors

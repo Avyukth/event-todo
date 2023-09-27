@@ -3,12 +3,13 @@ package main
 import (
 	"log"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+	db "event-todo/internal"
 	"event-todo/pkg/api"
 	"event-todo/pkg/events"
 	"event-todo/pkg/todo"
-	"event-todo/internal"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func main() {
@@ -26,23 +27,28 @@ func main() {
 	projectionManager := todo.NewProjectionManager()
 
 	// Initialize event handler with Projection Manager
-	eventHandler := events.NewEventHandler()
-	eventHandler.ProjectionManager = projectionManager // Assuming EventHandler has a ProjectionManager field
+	// eventHandler := events.NewEventHandler()
+	// eventHandler.ProjectionManager = projectionManager // Assuming EventHandler has a ProjectionManager field
 
-	// Initialize command handlers
+	// // Initialize command handlers
 	commandHandler := &todo.CommandHandler{
 		EventStore: eventStore,
+		ProjectionManager: projectionManager, // Injecting ProjectionManager
 	}
 
-	// Initialize API handlers and inject dependencies
-	apiHandler := &api.Handler{
+	// // Initialize API handlers and inject dependencies
+	// apiHandler := &api.Handler{
+	// 	CommandHandler: commandHandler,
+	// 	EventHandler:   eventHandler,
+	// 	DB:             inMemoryDB, // Assuming Handler has a DB field
+	// }
+
+
+	apiHandler	:= &api.Handler{
 		CommandHandler: commandHandler,
-		EventHandler:   eventHandler,
+		
 		DB:             inMemoryDB, // Assuming Handler has a DB field
-	}
 
-
-	&api.Handler{
 		ProjectionManager: projectionManager, // Injecting ProjectionManager
 		// Inject other dependencies if needed
 	}

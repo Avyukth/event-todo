@@ -7,12 +7,14 @@ import (
 
 // Define errors
 var (
-	ErrTaskNotFound = errors.New("task not found")
+	ErrTaskNotFound  = errors.New("task not found")
+	ErrTitleRequired = errors.New("title is required")
 )
 
 // CommandHandler handles commands and emits events.
 type CommandHandler struct {
-	EventStore events.EventStore
+	EventStore        *events.EventStore
+	ProjectionManager *ProjectionManager // Injecting ProjectionManager
 }
 
 // Command represents a command that can be handled by a CommandHandler.
@@ -29,7 +31,7 @@ type CreateTaskCommand struct {
 func (c *CreateTaskCommand) Execute(handler *CommandHandler, aggregateID string) (events.Event, error) {
 	// Validate the command parameters
 	if c.Title == "" {
-		return nil, errors.New("title is required")
+		return nil, ErrTitleRequired
 	}
 
 	// Emit a TaskCreatedEvent
@@ -40,19 +42,15 @@ func (c *CreateTaskCommand) Execute(handler *CommandHandler, aggregateID string)
 }
 
 // CompleteTaskCommand completes an existing task.
-type CompleteTaskCommand struct{
-    ID string
+type CompleteTaskCommand struct {
+	ID string
 }
 
 // Execute executes the CompleteTaskCommand.
 func (c *CompleteTaskCommand) Execute(handler *CommandHandler, aggregateID string) (events.Event, error) {
-	// Check if the task exists
-	_, err := handler.EventStore.Load(aggregateID)
-	if err != nil {
-		if errors.Is(err, events.ErrEventNotFound) {
-			return nil, ErrTaskNotFound
-		}
-		return nil, err
+	// Check if the task exists using ProjectionManager
+	if _, err := handler.ProjectionManager.GetTask(aggregateID); err != nil {
+		return nil, ErrTaskNotFound
 	}
 
 	// Emit a TaskCompletedEvent
@@ -62,17 +60,15 @@ func (c *CompleteTaskCommand) Execute(handler *CommandHandler, aggregateID strin
 }
 
 // DeleteTaskCommand deletes an existing task.
-type DeleteTaskCommand struct{}
+type DeleteTaskCommand struct {
+	ID string
+}
 
 // Execute executes the DeleteTaskCommand.
 func (c *DeleteTaskCommand) Execute(handler *CommandHandler, aggregateID string) (events.Event, error) {
-	// Check if the task exists
-	_, err := handler.EventStore.Load(aggregateID)
-	if err != nil {
-		if errors.Is(err, events.ErrEventNotFound) {
-			return nil, ErrTaskNotFound
-		}
-		return nil, err
+	// Check if the task exists using ProjectionManager
+	if _, err := handler.ProjectionManager.GetTask(aggregateID); err != nil {
+		return nil, ErrTaskNotFound
 	}
 
 	// Emit a TaskDeletedEvent
