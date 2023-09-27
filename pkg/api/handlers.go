@@ -5,6 +5,7 @@ import (
 	"event-todo/pkg/events"
 	"event-todo/pkg/todo"
 	"fmt"
+	"github.com/google/uuid"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -22,13 +23,13 @@ func (h *Handler) CreateTask(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Cannot parse JSON"})
 	}
 
+	aggregateID := uuid.NewString()
 	// Execute command to get the event
-	event, err := command.Execute(h.CommandHandler, "someAggregateID") // Replace with actual aggregate ID
+	event, err := command.Execute(h.CommandHandler, aggregateID) // Replace with actual aggregate ID
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot execute command"})
 	}
 
-	aggregateID := "someAggregateID" // Replace with actual aggregate ID
     // ...
     if err := h.CommandHandler.EventStore.Save(aggregateID, event); err != nil {
         return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot save event"})
@@ -39,7 +40,7 @@ func (h *Handler) CreateTask(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Cannot handle event"})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "Task created"})
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"aggregateID": aggregateID, "message": "Task created"})
 }
 
 func (h *Handler) CompleteTask(c *fiber.Ctx) error {
