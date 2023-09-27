@@ -1,15 +1,17 @@
 package api
 
 import (
-	"fmt"
 	db "event-todo/internal"
+	"event-todo/pkg/events"
 	"event-todo/pkg/todo"
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 )
 
 type Handler struct {
 	CommandHandler    *todo.CommandHandler
-	ProjectionManager *todo.ProjectionManager
+	ProjectionManager *events.ProjectionManager
 	DB                *db.InMemoryDB
 }
 

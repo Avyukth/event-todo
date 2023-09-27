@@ -13,11 +13,12 @@ var (
 
 type EventStore struct {
 	mu      sync.RWMutex
-	storage map[string][]Event // map[aggregateID]events
+	storage map[string][]Event
 }
 
 func NewInMemoryEventStore() *EventStore {
 	return &EventStore{
+		mu : sync.RWMutex{},
 		storage: make(map[string][]Event),
 	}
 }

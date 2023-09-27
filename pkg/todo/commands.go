@@ -14,7 +14,7 @@ var (
 // CommandHandler handles commands and emits events.
 type CommandHandler struct {
 	EventStore        *events.EventStore
-	ProjectionManager *ProjectionManager // Injecting ProjectionManager
+	ProjectionManager *events.ProjectionManager // Injecting ProjectionManager
 }
 
 // Command represents a command that can be handled by a CommandHandler.

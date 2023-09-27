@@ -1,8 +1,7 @@
-package todo
+package events 
 
 import (
 	"sync"
-	"event-todo/pkg/events"
 )
 
 // TaskProjection represents a read model for a task.
@@ -27,30 +26,30 @@ func NewProjectionManager() *ProjectionManager {
 }
 
 // HandleEvent handles the given event and updates the projections accordingly.
-func (pm *ProjectionManager) HandleEvent(event events.Event) error {
+func (pm *ProjectionManager) HandleEvent(event Event) error {
 	pm.mu.Lock()
 	defer pm.mu.Unlock()
 
 	switch e := event.(type) {
-	case *events.TaskCreatedEvent:
+	case *TaskCreatedEvent:
 		pm.tasks[e.ID] = &TaskProjection{
 			ID:    e.ID,
 			Title: e.Title,
 		}
-	case *events.TaskCompletedEvent:
+	case *TaskCompletedEvent:
 		task, exists := pm.tasks[e.ID]
 		if !exists {
-			return events.ErrEventNotFound
+			return ErrEventNotFound
 		}
 		task.Completed = true
-	case *events.TaskDeletedEvent:
+	case *TaskDeletedEvent:
 		task, exists := pm.tasks[e.ID]
 		if !exists {
-			return events.ErrEventNotFound
+			return ErrEventNotFound
 		}
 		task.Deleted = true
 	default:
-		return events.ErrInvalidEventType
+		return ErrInvalidEventType
 	}
 	return nil
 }
@@ -62,7 +61,7 @@ func (pm *ProjectionManager) GetTask(id string) (*TaskProjection, error) {
 
 	task, exists := pm.tasks[id]
 	if !exists {
-		return nil, events.ErrEventNotFound
+		return nil, ErrEventNotFound
 	}
 	return task, nil
 }

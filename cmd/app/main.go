@@ -24,33 +24,17 @@ func main() {
 	inMemoryDB := db.NewInMemoryDB()
 
 	// Initialize Projection Manager
-	projectionManager := todo.NewProjectionManager()
+	projectionManager := events.NewProjectionManager()
 
-	// Initialize event handler with Projection Manager
-	// eventHandler := events.NewEventHandler()
-	// eventHandler.ProjectionManager = projectionManager // Assuming EventHandler has a ProjectionManager field
-
-	// // Initialize command handlers
 	commandHandler := &todo.CommandHandler{
-		EventStore: eventStore,
-		ProjectionManager: projectionManager, // Injecting ProjectionManager
+		EventStore: 	  eventStore,
+		ProjectionManager: projectionManager,
 	}
-
-	// // Initialize API handlers and inject dependencies
-	// apiHandler := &api.Handler{
-	// 	CommandHandler: commandHandler,
-	// 	EventHandler:   eventHandler,
-	// 	DB:             inMemoryDB, // Assuming Handler has a DB field
-	// }
-
 
 	apiHandler	:= &api.Handler{
 		CommandHandler: commandHandler,
-		
 		DB:             inMemoryDB, // Assuming Handler has a DB field
-
 		ProjectionManager: projectionManager, // Injecting ProjectionManager
-		// Inject other dependencies if needed
 	}
 	// Setup routes
 	setupRoutes(app, apiHandler)

@@ -2,7 +2,7 @@ package events
 
 import (
 	"errors"
-	"event-todo/pkg/todo"
+	
 )
 
 // Define errors
@@ -52,11 +52,11 @@ func (e *TaskDeletedEvent) EventType() string {
 func ApplyEventToAggregate(aggregate Aggregate, event Event) error {
 	switch e := event.(type) {
 	case *TaskCreatedEvent:
-		return aggregate.(*todo.TaskAggregate).ApplyTaskCreatedEvent(e)
+		return aggregate.(*TaskAggregate).ApplyTaskCreatedEvent(e)
 	case *TaskCompletedEvent:
-		return aggregate.(*todo.TaskAggregate).ApplyTaskCompletedEvent(e)
+		return aggregate.(*TaskAggregate).ApplyTaskCompletedEvent(e)
 	case *TaskDeletedEvent:
-		return aggregate.(*todo.TaskAggregate).ApplyTaskDeletedEvent(e)
+		return aggregate.(*TaskAggregate).ApplyTaskDeletedEvent(e)
 	default:
 		return ErrInvalidEventType
 	}

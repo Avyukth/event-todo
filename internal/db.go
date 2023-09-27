@@ -3,24 +3,24 @@ package db
 import (
 	"sync"
 
-	"event-todo/pkg/todo"
+	"event-todo/pkg/events"
 )
 
 // InMemoryDB represents an in-memory database.
 type InMemoryDB struct {
 	mu     sync.RWMutex
-	tasks  map[string]*todo.TaskProjection
+	tasks  map[string]*events.TaskProjection
 }
 
 // NewInMemoryDB initializes a new InMemoryDB.
 func NewInMemoryDB() *InMemoryDB {
 	return &InMemoryDB{
-		tasks: make(map[string]*todo.TaskProjection),
+		tasks: make(map[string]*events.TaskProjection),
 	}
 }
 
 // SaveTask saves a task projection to the in-memory database.
-func (db *InMemoryDB) SaveTask(task *todo.TaskProjection) {
+func (db *InMemoryDB) SaveTask(task *events.TaskProjection) {
 	db.mu.Lock()
 	defer db.mu.Unlock()
 
@@ -28,23 +28,23 @@ func (db *InMemoryDB) SaveTask(task *todo.TaskProjection) {
 }
 
 // GetTask retrieves a task projection from the in-memory database by ID.
-func (db *InMemoryDB) GetTask(id string) (*todo.TaskProjection, error) {
+func (db *InMemoryDB) GetTask(id string) (*events.TaskProjection, error) {
 	db.mu.RLock()
 	defer db.mu.RUnlock()
 
 	task, exists := db.tasks[id]
 	if !exists {
-		return nil, todo.ErrTaskNotFound
+		return nil, events.ErrEventNotFound
 	}
 	return task, nil
 }
 
 // GetAllTasks retrieves all task projections from the in-memory database.
-func (db *InMemoryDB) GetAllTasks() []*todo.TaskProjection {
+func (db *InMemoryDB) GetAllTasks() []*events.TaskProjection {
 	db.mu.RLock()
 	defer db.mu.RUnlock()
 
-	var tasks []*todo.TaskProjection
+	var tasks []*events.TaskProjection
 	for _, task := range db.tasks {
 		tasks = append(tasks, task)
 	}
