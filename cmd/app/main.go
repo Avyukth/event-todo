@@ -13,17 +13,13 @@ import (
 )
 
 func main() {
-	// Initialize Fiber app
 	app := fiber.New()
 	app.Use(logger.New())
 
-	// Initialize in-memory event store
 	eventStore := events.NewInMemoryEventStore()
 
-	// Initialize in-memory database
 	inMemoryDB := db.NewInMemoryDB()
 
-	// Initialize Projection Manager
 	projectionManager := events.NewProjectionManager()
 
 	commandHandler := &todo.CommandHandler{
@@ -33,13 +29,11 @@ func main() {
 
 	apiHandler	:= &api.Handler{
 		CommandHandler: commandHandler,
-		DB:             inMemoryDB, // Assuming Handler has a DB field
-		ProjectionManager: projectionManager, // Injecting ProjectionManager
+		DB:             inMemoryDB,
+		ProjectionManager: projectionManager,
 	}
-	// Setup routes
 	setupRoutes(app, apiHandler)
 
-	// Start the Fiber app
 	log.Fatal(app.Listen(":3000"))
 }
 

@@ -27,7 +27,6 @@ func (es *EventStore) Save(aggregateID string, event Event) error {
 	es.mu.Lock()
 	defer es.mu.Unlock()
 
-	// Append the new event to the list of events for the given aggregateID
 	es.storage[aggregateID] = append(es.storage[aggregateID], event)
 
 	return nil
